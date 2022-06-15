@@ -4,7 +4,7 @@ const checkError = (err) => {
   const validationErrorCode = 400;
   const notFoundErrorCode = 404;
   const defaultErrorCode = 500;
-  if (err.name === 'ValidationError') {
+  if (err.name === 'ValidationError' || err.name === 'CastError') {
     return validationErrorCode;
   }
   if (err.name === 'NotFoundError') {
@@ -33,7 +33,7 @@ module.exports.getCards = (req, res) => {
     .catch((err) => res.status(checkError(err)).send({ message: err.message }));
 };
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
         const error = new Error('Not found');
