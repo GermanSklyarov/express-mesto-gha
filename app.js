@@ -21,6 +21,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', userRouter);
 app.use('/', cardRouter);
 
+app.use('/', (req, res, next) => {
+  res.status(404).json({ message: 'Not found' });
+  next();
+});
+
 process.on('uncaughtException', (err, origin) => {
   console.log(`${origin} ${err.name} : ${err.message}`);
 });

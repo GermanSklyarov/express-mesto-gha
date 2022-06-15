@@ -33,11 +33,11 @@ module.exports.getUsers = (req, res) => {
     .catch((err) => res.status(checkError(err)).send({ message: err.message }));
 };
 module.exports.getUser = (req, res) => {
-  User.findById(req.params.id)
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        const error = new Error('Not found');
-        error.name = 'NotFoundError';
+        const error = new Error('Запрашиваемый пользователь не найден');
+        error.name = 'ValidationError';
         throw error;
       }
       res.send({ data: user });
@@ -45,12 +45,15 @@ module.exports.getUser = (req, res) => {
     .catch((err) => res.status(checkError(err)).send({ message: err.message }));
 };
 module.exports.updateUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, req.body, { new: true })
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(checkError(err)).send({ message: err.message }));
 };
 module.exports.updateUserAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, {
+    new: true,
+    runValidators: true,
+  })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(checkError(err)).send({ message: err.message }));
 };
