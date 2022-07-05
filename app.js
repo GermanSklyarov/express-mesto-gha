@@ -11,6 +11,8 @@ const cardRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { checkError } = require('./utils/functions');
+const { urlRegex } = require('./utils/constants');
+const NotFoundError = require('./errors/not-found-err');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -30,7 +32,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/^(http|https):\/\/([\w.]+\/?)\S*/),
+    avatar: Joi.string().pattern(urlRegex),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }).unknown(true),
@@ -40,8 +42,8 @@ app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 
 app.use('/', (req, res, next) => {
-  res.status(404).json({ message: 'Not found' });
-  next();
+  const err = new NotFoundError('Not found');
+  next(err);
 });
 
 app.use(errors());
